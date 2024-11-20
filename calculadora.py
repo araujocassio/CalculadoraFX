@@ -50,7 +50,6 @@ st.set_page_config(
 # Cabeçalho da página
 st.title("📊 PipRisk")
 
-
 # Formulário principal
 st.markdown("---")
 st.subheader("🛠 Configurações da Operação")
@@ -63,10 +62,11 @@ with col1:
     )
 
 with col2:
-    par_moedas = st.text_input(
-        "🌐 Par de Moedas:", value="USD/BRL",
-        help="Informe o par no formato BASE/QUOTE (ex.: USD/JPY)."
+    par_moedas_input = st.text_input(
+        "🌐 Par de Moedas:", value="USDBRL",
+        help="Informe o par no formato BASEQUOTE (ex.: USDJPY)."
     ).upper()
+    par_moedas = f"{par_moedas_input[:3]}/{par_moedas_input[3:]}" if len(par_moedas_input) == 6 else par_moedas_input
 
 with col3:
     pips = st.number_input(
