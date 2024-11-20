@@ -48,7 +48,7 @@ st.set_page_config(
 )
 
 # Cabeçalho da página
-st.title("📊 Babypips")
+st.title("📊 BabypPips")
 
 
 # Formulário principal
