@@ -48,13 +48,8 @@ st.set_page_config(
 )
 
 # Cabeçalho da página
-st.title("📊 Calculadora de Lote e Risco para Traders")
-st.markdown(
-    """
-    ### Solução Profissional para Cálculo de Risco
-    Esta ferramenta permite calcular o tamanho ideal do lote e gerenciar o risco de suas operações de forma simples e precisa.
-    """
-)
+st.title("📊 Babypips")
+
 
 # Formulário principal
 st.markdown("---")
