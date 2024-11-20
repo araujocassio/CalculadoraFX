@@ -9,7 +9,7 @@ def obter_cotacao(par_moedas):
     base, quote = par_moedas.split('/')
     url = 'https://openexchangerates.org/api/latest.json'
     params = {
-        'app_id': 'edd30e082f404192ae8c03219d82e3f6',  # Substitua pela sua chave da API
+        'app_id': st.secrets['API_key'],  # Substitua pela sua chave da API
         'symbols': f"{base},{quote}"
     }
 
