@@ -18,26 +18,28 @@ def obter_cotacao(par_moedas):
         raise ValueError("Erro ao obter a cotação. Verifique sua API Key e a conexão com a internet.")
 
     data = response.json()
-    if 'rates' not in data or base not in data['rates'] or quote not in data['rates']:
+    rates = data.get('rates', {})
+    if base not in rates or quote not in rates:
         raise ValueError(f"Cotações para {par_moedas} não encontradas.")
 
-    return data['rates'][quote] / data['rates'][base]
+    # Retorna a taxa de câmbio base/quote
+    return rates[quote] / rates[base]
 
 def calcular_lote_e_risco(risco_brl, par_moedas, pips):
     """
-    Calcula o tamanho do lote e o risco em termos do par de moedas operado.
+    Calcula o tamanho do lote diretamente pelo risco em USD e pips ajustados.
     """
     # Converter BRL para USD
     taxa_brl_usd = obter_cotacao('USD/BRL')
     risco_usd = risco_brl / taxa_brl_usd
 
-    # Obter a cotação do par de moedas operado
-    taxa_cambio = obter_cotacao(par_moedas)
+    # Ajustar o tamanho do stop com 15% de margem
+    pips_ajustado = pips * 1.15
 
     # Calcula o tamanho do lote
-    tamanho_lote = risco_usd / (pips / taxa_cambio)
+    tamanho_lote = risco_usd / pips_ajustado
 
-    return tamanho_lote, risco_usd
+    return tamanho_lote, risco_usd, pips_ajustado
 
 # Configuração da página do Streamlit
 st.set_page_config(
@@ -48,7 +50,7 @@ st.set_page_config(
 )
 
 # Cabeçalho da página
-st.title("📊 PipRisk")
+st.title("📊 Calculadora de Lote e Risco")
 
 # Formulário principal
 st.markdown("---")
@@ -63,14 +65,14 @@ with col1:
 
 with col2:
     par_moedas_input = st.text_input(
-        "🌐 Par de Moedas:", value="USDBRL",
+        "🌐 Par de Moedas:", value="AUDUSD",
         help="Informe o par no formato BASEQUOTE (ex.: USDJPY)."
     ).upper()
     par_moedas = f"{par_moedas_input[:3]}/{par_moedas_input[3:]}" if len(par_moedas_input) == 6 else par_moedas_input
 
 with col3:
     pips = st.number_input(
-        "📉 Stop Loss (Pips):", min_value=0.0, step=0.1, value=50.0,
+        "📉 Stop Loss (Pips):", min_value=1.0, step=1.0, value=100.0,
         help="Tamanho do stop loss em pips."
     )
 
@@ -83,14 +85,11 @@ st.subheader("📈 Resultados do Cálculo")
 
 if calcular:
     try:
-        # Ajuste nos pips
-        pips_adjusted = pips * 1.20
-
         # Realizar o cálculo
-        tamanho_lote, risco_usd = calcular_lote_e_risco(risco_brl, par_moedas, pips_adjusted)
+        tamanho_lote, risco_usd, pips_ajustado = calcular_lote_e_risco(risco_brl, par_moedas, pips)
 
         # Exibir os resultados
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("📏 Tamanho do Lote", f"{tamanho_lote:.2f}")
         with col2:
