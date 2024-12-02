@@ -34,7 +34,7 @@ def calcular_lote_e_risco(risco_brl, par_moedas, pips):
     risco_usd = risco_brl / taxa_brl_usd
 
     # Ajustar o tamanho do stop com 15% de margem
-    pips_ajustado = pips * 1.15
+    pips_ajustado = pips * 1.20
 
     # Calcula o tamanho do lote
     tamanho_lote = risco_usd / pips_ajustado
